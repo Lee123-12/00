@@ -16,11 +16,12 @@ BUILD = os.path.join(ROOT, "scripts", "build")
 
 
 def rich(text):
-    """'{{...}}' 빈칸을 회색 span 으로 바꾼 HTML."""
+    """'{{빈칸}}' 은 회색 span, '**굵게**' 는 b 로 바꾼 HTML."""
     out = []
-    for seg, blank in segments(text):
+    for seg, kind in segments(text):
         seg = html.escape(seg)
-        out.append(f'<span class="blank">{seg}</span>' if blank else seg)
+        out.append(f'<span class="blank">{seg}</span>' if kind == "blank"
+                   else f"<b>{seg}</b>" if kind == "bold" else seg)
     return "".join(out)
 
 
@@ -55,7 +56,9 @@ table.grid td { text-align: center; }
 table.grid td.left { text-align: left; }
 table.grid tr.head th { background: #dfe6ef; }
 td.photo { background: #fafbfc; color: #9aa4b1; font-size: 9pt; line-height: 1.5; }
-table.profile td { text-align: left; padding-left: 3mm; }
+table.profile td { text-align: left; padding: 1.6mm 3mm; line-height: 1.5; }
+table.profile td b { color: #1f3a5f; font-weight: 700; margin-right: 1mm; }
+table.profile td div + div { margin-top: 0.4mm; }
 .decl { margin-top: 5mm; text-align: center; }
 .decl .date { margin-top: 2.2mm; }
 .decl .sign { margin-top: 2mm; text-align: right; padding-right: 4mm; font-size: 10.5pt; }
@@ -129,7 +132,10 @@ def resume_html():
         parts.append(f'<table class="grid"><colgroup>{cols}</colgroup>{head}{body}</table>')
 
     parts.append(f'<h2 class="sec">{r["profile_title"]}</h2>')
-    rows = "".join(f'<tr><th>{k}</th><td>{rich(v)}</td></tr>' for k, v in r["profile"])
+    rows = "".join(
+        f'<tr><th>{k}</th><td>' + "".join(f"<div>{rich(line)}</div>" for line in v) + "</td></tr>"
+        for k, v in r["profile"]
+    )
     parts.append('<table class="grid profile"><colgroup><col style="width:40mm"><col>'
                  f"</colgroup>{rows}</table>")
 

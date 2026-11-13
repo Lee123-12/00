@@ -111,8 +111,9 @@ class Builder:
         self.fmt(p, **kw)
         return p
 
-    def rich(self, text, cid, blank_cid):
-        return [(seg, blank_cid if blank else cid) for seg, blank in segments(text)]
+    def rich(self, text, cid, bold_cid=None):
+        """빈칸은 보통 글씨로 둔다: 한글에서 덮어쓴 글자가 회색이 되지 않도록."""
+        return [(seg, bold_cid if kind == "bold" and bold_cid else cid) for seg, kind in segments(text)]
 
     def table(self, rows, cols, widths_mm):
         if self._first:
@@ -187,9 +188,9 @@ class Builder:
 
 # ====================================================================== 이력서
 def build_resume(path):
-    b = Builder(top_mm=13, bottom_mm=10)
+    b = Builder(top_mm=12, bottom_mm=8)
     r = RESUME
-    td, blank = b.cs(9.5), b.cs(9.5, color=BLANK)
+    td = b.cs(9.5)
     th = b.cs(9.5, bold=True, color=NAVY)
 
     b.para([(r["title"], b.cs(22, bold=True, color=NAVY))], align="CENTER", spacing=120)
@@ -205,7 +206,7 @@ def build_resume(path):
         return [([(text, th)], dict(align=align))]
 
     def value(text, align="CENTER"):
-        return [(b.rich(text, td, blank), dict(align=align))]
+        return [(b.rich(text, td), dict(align=align))]
 
     # 인적사항 -----------------------------------------------------------
     rows = r["personal"]
@@ -226,7 +227,7 @@ def build_resume(path):
 
     def section_title(text):
         b.para([("■ ", b.cs(9, color=NAVY)), (text, b.cs(11, bold=True, color=NAVY))],
-               before=10, after=3)
+               before=8, after=3)
 
     # 표 섹션 -------------------------------------------------------------
     for sec in r["sections"]:
@@ -244,17 +245,20 @@ def build_resume(path):
     # 나에 대하여 ---------------------------------------------------------
     section_title(r["profile_title"])
     n = len(r["profile"])
+    bold = b.cs(9.5, bold=True, color=NAVY)
     t = b.table(n, 2, [40, CONTENT_MM - 40])
     for i, (k, v) in enumerate(r["profile"]):
         edge = dict(top=navy_top) if i == 0 else dict(bottom=navy_bottom) if i == n - 1 else {}
-        h = 7.6 if len(v) < 40 else 11
+        lines = sum(-(-len(line.replace("*", "")) // 40) for line in v)  # 한 줄 ≈ 40자
+        h = max(7.6, lines * 4.6 + 3)
+        paras = [(b.rich(line, td, bold), dict(align="LEFT", after=1)) for line in v]
         b.cell(t, i, 0, label(k), bf=b.bf(fill="#EDF1F6", **edge), height_mm=h)
-        b.cell(t, i, 1, value(v, "LEFT"), bf=b.bf(**edge), height_mm=h, margin_mm=(3, 2, 1, 1))
+        b.cell(t, i, 1, paras, bf=b.bf(**edge), height_mm=h, margin_mm=(3, 2, 1.6, 1.6))
 
     decl = b.cs(10)
-    b.para([(r["declaration"], decl)], align="CENTER", before=14)
-    b.para(b.rich(r["date"], decl, b.cs(10, color=BLANK)), align="CENTER", before=6)
-    b.para(b.rich(r["signer"], b.cs(10.5), b.cs(10.5, color=BLANK)), align="RIGHT", before=6)
+    b.para([(r["declaration"], decl)], align="CENTER", before=9)
+    b.para(b.rich(r["date"], decl), align="CENTER", before=4)
+    b.para(b.rich(r["signer"], b.cs(10.5)), align="RIGHT", before=4)
     b.save(path)
 
 
@@ -270,14 +274,14 @@ def build_intro(path):
     head_bf = b.bf(top=None, left=None, right=None, bottom=navy_line)
     b.cell(t, 0, 0, [([(d["title"], b.cs(22, bold=True, color=NAVY))], dict(align="LEFT", spacing=110))],
            bf=head_bf, valign="BOTTOM", margin_mm=(0, 0, 0, 1.5))
-    lab, val, blank = b.cs(9, bold=True, color=NAVY), b.cs(9, color=GRAY), b.cs(9, color=BLANK)
+    lab, val = b.cs(9, bold=True, color=NAVY), b.cs(9, color=GRAY)
     sep = b.cs(9, color="#C3CCD7")
     runs = []
     for i, (k, v) in enumerate(d["meta"]):
         if i:
             runs.append(("   |   ", sep))
         runs.append((k + " ", lab))
-        runs += b.rich(v, val, blank)
+        runs += b.rich(v, val)
     b.cell(t, 0, 1, [(runs, dict(align="RIGHT"))], bf=head_bf, valign="BOTTOM", margin_mm=(0, 0, 0, 1.5))
 
     # 헤드라인 박스 --------------------------------------------------------
@@ -286,7 +290,7 @@ def build_intro(path):
     box_bf = b.bf(fill="#F2F5F9", top=None, right=None, bottom=None, left=("1.5 mm", NAVY))
     b.cell(t, 0, 0, [
         ([("“" + d["headline"] + "”", b.cs(13, bold=True, color=NAVY))], dict(align="LEFT", spacing=140)),
-        (b.rich(d["lead"], b.cs(9.5, color="#3B4654"), blank), dict(align="LEFT", spacing=160, before=2)),
+        (b.rich(d["lead"], b.cs(9.5, color="#3B4654")), dict(align="LEFT", spacing=160, before=2)),
     ], bf=box_bf, margin_mm=(4.5, 4, 2.6, 2.6))
 
     for sec in d["sections"]:
@@ -311,7 +315,7 @@ def build_intro(path):
                    align="CENTER", before=6)
         else:
             for text in sec["paragraphs"]:
-                b.para(b.rich(text, body, blank), align="JUSTIFY", spacing=170, after=2.5, indent=3.2)
+                b.para(b.rich(text, body), align="JUSTIFY", spacing=170, after=2.5, indent=3.2)
             if sec.get("closing"):
                 b.para([("", b.cs(4))], spacing=100)
                 t = b.table(1, 1, [CONTENT_MM])
