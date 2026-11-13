@@ -22,8 +22,10 @@ HP = "{http://www.hancom.co.kr/hwpml/2011/paragraph}"
 HH = "{http://www.hancom.co.kr/hwpml/2011/head}"
 
 SANS, SERIF = "함초롬돋움", "함초롬바탕"
-NAVY, INK, GRAY, BLANK = "#1F3A5F", "#1D232B", "#56657A", "#9AA4B1"
-LINE, LINE2 = "#A8B4C3", "#B9C4D2"
+# 한글에서 손으로 만든 문서처럼: 검정 글씨, 회색 선, 옅은 회색 음영만 쓴다
+DARK, INK, GRAY, BLANK = "#1A1A1A", "#1A1A1A", "#555555", "#9A9A9A"
+LINE = "#8C8C8C"
+FILL, FILL_HEAD, FILL_PHOTO = "#EFEFEF", "#E3E3E3", "#FAFAFA"
 
 
 def hu(mm):
@@ -191,15 +193,15 @@ def build_resume(path):
     b = Builder(top_mm=12, bottom_mm=8)
     r = RESUME
     td = b.cs(9.5)
-    th = b.cs(9.5, bold=True, color=NAVY)
+    th = b.cs(9.5, bold=True, color=DARK)
 
-    b.para([(r["title"], b.cs(22, bold=True, color=NAVY))], align="CENTER", spacing=120)
-    b.para([("“" + r["tagline"] + "”", b.cs(9.5, color=GRAY))], align="CENTER", after=8)
+    b.para([(r["title"], b.cs(22, bold=True, color=DARK))], align="CENTER", spacing=120)
+    b.para([(r["tagline"], b.cs(9.5, color="#666666"))], align="CENTER", after=8)
 
-    navy_top = ("0.5 mm", NAVY)
-    navy_bottom = ("0.4 mm", NAVY)
-    bf_th = b.bf(fill="#EDF1F6")
-    bf_head = b.bf(fill="#DFE6EF", top=navy_top)
+    navy_top = ("0.5 mm", DARK)
+    navy_bottom = ("0.4 mm", DARK)
+    bf_th = b.bf(fill=FILL)
+    bf_head = b.bf(fill=FILL_HEAD, top=navy_top)
     bf_td = b.bf()
 
     def label(text, align="CENTER"):
@@ -216,17 +218,17 @@ def build_resume(path):
     t.merge_cells(3, 2, 3, 4)
     for i, row in enumerate(rows):
         edge = dict(top=navy_top) if i == 0 else dict(bottom=navy_bottom) if i == len(rows) - 1 else {}
-        b.cell(t, i, 1, label(row[0]), bf=b.bf(fill="#EDF1F6", **edge), height_mm=10)
+        b.cell(t, i, 1, label(row[0]), bf=b.bf(fill=FILL, **edge), height_mm=10)
         b.cell(t, i, 2, value(row[1], "LEFT"), bf=b.bf(**edge), height_mm=10)
         if len(row) == 4:
-            b.cell(t, i, 3, label(row[2]), bf=b.bf(fill="#EDF1F6", **edge), height_mm=10)
+            b.cell(t, i, 3, label(row[2]), bf=b.bf(fill=FILL, **edge), height_mm=10)
             b.cell(t, i, 4, value(row[3], "LEFT"), bf=b.bf(**edge), height_mm=10)
     photo = b.cs(9, color=BLANK)
     b.cell(t, 0, 0, [([("사 진", photo)], {}), ([("(3 × 4 cm)", photo)], {})],
-           bf=b.bf(fill="#FAFBFC", top=navy_top, bottom=navy_bottom))
+           bf=b.bf(fill=FILL_PHOTO, top=navy_top, bottom=navy_bottom))
 
     def section_title(text):
-        b.para([("■ ", b.cs(9, color=NAVY)), (text, b.cs(11, bold=True, color=NAVY))],
+        b.para([("■ ", b.cs(9, color=DARK)), (text, b.cs(11, bold=True, color=DARK))],
                before=8, after=3)
 
     # 표 섹션 -------------------------------------------------------------
@@ -245,14 +247,14 @@ def build_resume(path):
     # 나에 대하여 ---------------------------------------------------------
     section_title(r["profile_title"])
     n = len(r["profile"])
-    bold = b.cs(9.5, bold=True, color=NAVY)
+    bold = b.cs(9.5, bold=True, color=DARK)
     t = b.table(n, 2, [40, CONTENT_MM - 40])
     for i, (k, v) in enumerate(r["profile"]):
         edge = dict(top=navy_top) if i == 0 else dict(bottom=navy_bottom) if i == n - 1 else {}
         lines = sum(-(-len(line.replace("*", "")) // 40) for line in v)  # 한 줄 ≈ 40자
         h = max(7.6, lines * 4.6 + 3)
         paras = [(b.rich(line, td, bold), dict(align="LEFT", after=1)) for line in v]
-        b.cell(t, i, 0, label(k), bf=b.bf(fill="#EDF1F6", **edge), height_mm=h)
+        b.cell(t, i, 0, label(k), bf=b.bf(fill=FILL, **edge), height_mm=h)
         b.cell(t, i, 1, paras, bf=b.bf(**edge), height_mm=h, margin_mm=(3, 2, 1.6, 1.6))
 
     decl = b.cs(10)
@@ -264,66 +266,44 @@ def build_resume(path):
 
 # ==================================================================== 나 소개서
 def build_intro(path):
-    b = Builder(top_mm=14, bottom_mm=10)
+    b = Builder(top_mm=15, bottom_mm=10)
     d = INTRO
-    body = b.cs(10, font=SERIF)
-    navy_line = ("0.5 mm", NAVY)
+    body = b.cs(10.5, font=SERIF)
+    heading = b.cs(12, bold=True, color=DARK)
 
-    # 머리 (제목 | 이름·소속·작성일) ------------------------------------------
+    def body_para(text, before=0):
+        b.para(b.rich(text, body), align="JUSTIFY", spacing=170, before=before, after=2.5, indent=3.2)
+
+    # 머리 (제목 | 소속·이름·작성일), 아래에 검은 선 하나 ------------------------------
     t = b.table(1, 2, [52, CONTENT_MM - 52])
-    head_bf = b.bf(top=None, left=None, right=None, bottom=navy_line)
-    b.cell(t, 0, 0, [([(d["title"], b.cs(22, bold=True, color=NAVY))], dict(align="LEFT", spacing=110))],
+    head_bf = b.bf(top=None, left=None, right=None, bottom=("0.4 mm", DARK))
+    b.cell(t, 0, 0, [([(d["title"], b.cs(20, bold=True, color=DARK))], dict(align="LEFT", spacing=110))],
            bf=head_bf, valign="BOTTOM", margin_mm=(0, 0, 0, 1.5))
-    lab, val = b.cs(9, bold=True, color=NAVY), b.cs(9, color=GRAY)
-    sep = b.cs(9, color="#C3CCD7")
+    meta = b.cs(9, color="#333333")
     runs = []
     for i, (k, v) in enumerate(d["meta"]):
-        if i:
-            runs.append(("   |   ", sep))
-        runs.append((k + " ", lab))
-        runs += b.rich(v, val)
+        runs.append((("      " if i else "") + k + ": ", meta))
+        runs += b.rich(v, meta)
     b.cell(t, 0, 1, [(runs, dict(align="RIGHT"))], bf=head_bf, valign="BOTTOM", margin_mm=(0, 0, 0, 1.5))
 
-    # 헤드라인 박스 --------------------------------------------------------
-    b.para([("", b.cs(6))], spacing=100)
-    t = b.table(1, 1, [CONTENT_MM])
-    box_bf = b.bf(fill="#F2F5F9", top=None, right=None, bottom=None, left=("1.5 mm", NAVY))
-    b.cell(t, 0, 0, [
-        ([("“" + d["headline"] + "”", b.cs(13, bold=True, color=NAVY))], dict(align="LEFT", spacing=140)),
-        (b.rich(d["lead"], b.cs(9.5, color="#3B4654")), dict(align="LEFT", spacing=160, before=2)),
-    ], bf=box_bf, margin_mm=(4.5, 4, 2.6, 2.6))
+    body_para(d["lead"], before=10)
 
     for sec in d["sections"]:
-        b.para([(f" {sec['no']} ", b.cs(10.5, bold=True, color="#FFFFFF", shade=NAVY)),
-                ("  " + sec["title"], b.cs(11.5, bold=True, color=NAVY))], before=12, after=1)
-        b.para([(sec["subtitle"], b.cs(9.5, color=GRAY))], after=3)
+        b.para([(f"{sec['no']}. {sec['title']}", heading)], before=14, after=4)
         if "keywords" in sec:
-            gap = 3
-            w = (CONTENT_MM - 2 * gap) / 3
-            t = b.table(1, 5, [w, gap, w, gap, w])
-            box = b.bf(fill="#FAFBFD", color=LINE2, top=navy_line)
-            none = b.bf(top=None, bottom=None, left=None, right=None)
+            n = len(sec["keywords"])
+            t = b.table(2, n, [1] * n)
+            head = b.bf(fill=FILL)
             for i, k in enumerate(sec["keywords"]):
-                b.cell(t, 0, i * 2, [
-                    ([(k["word"], b.cs(13, bold=True, color=NAVY))], dict(align="LEFT", spacing=130)),
-                    ([(k["caption"], b.cs(9, color=GRAY))], dict(align="LEFT", after=3)),
-                    ([(k["text"], b.cs(9.5, font=SERIF))], dict(align="LEFT", spacing=165)),
-                ], bf=box, valign="TOP", margin_mm=(3.2, 3.2, 2.6, 3), height_mm=63)
-                if i < 2:
-                    b.cell(t, 0, i * 2 + 1, [([("", b.cs(6))], {})], bf=none)
-            b.para([(sec["closing"], b.cs(9.5, bold=True, color=NAVY, tracking=-3))],
-                   align="CENTER", before=6)
+                b.cell(t, 0, i, [([(k["word"], b.cs(10.5, bold=True, color=DARK))], {})],
+                       bf=head, height_mm=7.5)
+                b.cell(t, 1, i, [(b.rich(k["text"], b.cs(9.8, font=SERIF)), dict(align="LEFT", spacing=165))],
+                       bf=b.bf(), valign="TOP", margin_mm=(3, 3, 2.4, 2.6), height_mm=44)
+            b.para([("", b.cs(5))], spacing=100)
+            body_para(sec["after"])
         else:
             for text in sec["paragraphs"]:
-                b.para(b.rich(text, body), align="JUSTIFY", spacing=170, after=2.5, indent=3.2)
-            if sec.get("closing"):
-                b.para([("", b.cs(4))], spacing=100)
-                t = b.table(1, 1, [CONTENT_MM])
-                closing = b.cs(10, bold=True, color=NAVY)
-                lines = [ln.strip() + ("." if not ln.strip().endswith(".") else "")
-                         for ln in sec["closing"].split(". ")]
-                b.cell(t, 0, 0, [([(ln, closing)], dict(spacing=150)) for ln in lines],
-                       bf=b.bf(color=LINE2, left=None, right=None), margin_mm=(1, 1, 2, 2))
+                body_para(text)
     b.save(path)
 
 

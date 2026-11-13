@@ -31,33 +31,31 @@ BASE_CSS = """
 html, body { background: #fff; }
 body {
   font-family: "Noto Sans CJK KR", "NanumGothic", sans-serif;
-  color: #1d232b; font-size: 9.6pt; line-height: 1.55;
+  color: #1a1a1a; font-size: 9.6pt; line-height: 1.55;
   -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
 .page { width: 210mm; padding: 13mm 18mm 0; }
-.blank { color: #9aa4b1; }
+.blank { color: #9a9a9a; }
 """
 
 RESUME_CSS = BASE_CSS + """
-.r-title { text-align: center; font-size: 22pt; font-weight: 700; letter-spacing: 6pt;
-  color: #1f3a5f; line-height: 1.2; }
-.tagline { text-align: center; color: #56657a; font-size: 9.6pt; margin: 1.4mm 0 4.2mm; }
-h2.sec { font-size: 10.8pt; font-weight: 700; color: #1f3a5f; margin: 4.6mm 0 1.4mm;
-  display: flex; align-items: center; gap: 2mm; }
-h2.sec::before { content: ""; width: 2.4mm; height: 2.4mm; background: #1f3a5f; display: inline-block; }
+.r-title { text-align: center; font-size: 22pt; font-weight: 700; letter-spacing: 6pt; line-height: 1.2; }
+.tagline { text-align: center; color: #666; font-size: 9.4pt; margin: 1.4mm 0 4.2mm; }
+h2.sec { font-size: 10.8pt; font-weight: 700; margin: 4.6mm 0 1.4mm; }
+h2.sec::before { content: "■"; font-size: 8.5pt; margin-right: 1.6mm; position: relative; top: -1pt; }
 table.grid { width: 100%; border-collapse: collapse; table-layout: fixed;
-  border-top: 1.6pt solid #1f3a5f; border-bottom: 1pt solid #1f3a5f; }
-table.grid th, table.grid td { border: 0.6pt solid #a8b4c3; padding: 1.2mm 2.2mm; height: 7.6mm;
+  border-top: 1.4pt solid #1a1a1a; border-bottom: 1pt solid #1a1a1a; }
+table.grid th, table.grid td { border: 0.6pt solid #8c8c8c; padding: 1.2mm 2.2mm; height: 7.6mm;
   vertical-align: middle; word-break: keep-all; }
 table.grid tr:first-child th, table.grid tr:first-child td { border-top: none; }
 table.grid tr:last-child th, table.grid tr:last-child td { border-bottom: none; }
-table.grid th { background: #edf1f6; color: #1f3a5f; font-weight: 600; text-align: center; }
+table.grid th { background: #efefef; font-weight: 600; text-align: center; }
 table.grid td { text-align: center; }
 table.grid td.left { text-align: left; }
-table.grid tr.head th { background: #dfe6ef; }
-td.photo { background: #fafbfc; color: #9aa4b1; font-size: 9pt; line-height: 1.5; }
+table.grid tr.head th { background: #e3e3e3; }
+td.photo { background: #fafafa; color: #9a9a9a; font-size: 9pt; line-height: 1.5; }
 table.profile td { text-align: left; padding: 1.6mm 3mm; line-height: 1.5; }
-table.profile td b { color: #1f3a5f; font-weight: 700; margin-right: 1mm; }
+table.profile td b { font-weight: 700; margin-right: 1mm; }
 table.profile td div + div { margin-top: 0.4mm; }
 .decl { margin-top: 5mm; text-align: center; }
 .decl .date { margin-top: 2.2mm; }
@@ -65,43 +63,30 @@ table.profile td div + div { margin-top: 0.4mm; }
 """
 
 INTRO_CSS = BASE_CSS + """
-body { font-size: 10pt; line-height: 1.72; }
-.page { padding: 14mm 18mm 0; }
+body { font-size: 10.2pt; line-height: 1.75; }
+.page { padding: 15mm 18mm 0; }
 .i-head { display: flex; justify-content: space-between; align-items: flex-end;
-  border-bottom: 1.6pt solid #1f3a5f; padding-bottom: 2.2mm; }
-.i-title { font-size: 22pt; font-weight: 700; color: #1f3a5f; letter-spacing: 1pt; line-height: 1.15; }
-.i-meta { font-size: 9pt; color: #56657a; text-align: right; line-height: 1.6; }
-.i-meta b { color: #1f3a5f; font-weight: 600; margin-right: 1.2mm; }
-.i-meta span + span::before { content: "|"; color: #c3ccd7; margin: 0 2.2mm; }
-.headline { margin: 4.5mm 0 1mm; background: #f2f5f9; border-left: 1.6mm solid #1f3a5f;
-  padding: 3mm 4.5mm; }
-.headline .q { font-size: 13pt; font-weight: 700; color: #1f3a5f; line-height: 1.4; }
-.headline p { margin-top: 1.2mm; color: #3b4654; font-size: 9.6pt; }
-h2 { font-size: 11.6pt; font-weight: 700; color: #1f3a5f; margin-top: 5mm;
-  display: flex; align-items: baseline; gap: 2.2mm; }
-h2 .no { font-size: 10pt; color: #fff; background: #1f3a5f; border-radius: 1mm;
-  padding: 0 1.6mm; line-height: 1.55; }
-.sub { color: #56657a; font-size: 9.4pt; margin: 0.4mm 0 1.6mm; padding-left: 0.4mm; }
-.essay p { font-family: "Noto Serif CJK KR", "NanumMyeongjo", serif; text-align: justify;
+  border-bottom: 1.2pt solid #1a1a1a; padding-bottom: 2mm; }
+.i-title { font-size: 20pt; font-weight: 700; line-height: 1.15; }
+.i-meta { font-size: 9pt; color: #333; }
+.i-meta span + span { margin-left: 4.5mm; }
+p.body { font-family: "Noto Serif CJK KR", "NanumMyeongjo", serif; text-align: justify;
   text-indent: 3.2mm; margin-bottom: 1.3mm; word-break: keep-all; }
-.kw { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin-top: 1mm; }
-.kw .box { border: 0.7pt solid #b9c4d2; border-top: 1.6pt solid #1f3a5f; background: #fafbfd;
-  padding: 2.6mm 3.2mm 3mm; }
-.kw .word { font-size: 13pt; font-weight: 700; color: #1f3a5f; line-height: 1.3; }
-.kw .cap { font-size: 8.8pt; color: #56657a; margin-bottom: 1.4mm; }
-.kw .txt { font-family: "Noto Serif CJK KR", "NanumMyeongjo", serif; font-size: 9.5pt;
-  line-height: 1.66; word-break: keep-all; }
-.closing { margin-top: 2.4mm; text-align: center; color: #1f3a5f; font-weight: 600;
-  font-size: 10pt; }
-.closing.boxed { border-top: 0.7pt solid #b9c4d2; border-bottom: 0.7pt solid #b9c4d2;
-  padding: 2.2mm 0; margin-top: 2.6mm; }
+p.lead { margin-top: 4.5mm; }
+h2 { font-size: 11.8pt; font-weight: 700; margin: 6mm 0 1.8mm; }
+table.kw { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 1.6mm 0 2.4mm; }
+table.kw th, table.kw td { border: 0.6pt solid #8c8c8c; }
+table.kw th { background: #efefef; font-size: 10.5pt; font-weight: 700; padding: 1.2mm 0; }
+table.kw td { vertical-align: top; padding: 2.4mm 3mm 2.6mm;
+  font-family: "Noto Serif CJK KR", "NanumMyeongjo", serif; font-size: 9.8pt;
+  line-height: 1.68; word-break: keep-all; }
 """
 
 
 def resume_html():
     r = RESUME
     parts = [f'<h1 class="r-title">{r["title"]}</h1>',
-             f'<p class="tagline">“{rich(r["tagline"])}”</p>']
+             f'<p class="tagline">{rich(r["tagline"])}</p>']
 
     # 인적사항
     rows = []
@@ -149,28 +134,21 @@ def resume_html():
 
 def intro_html():
     d = INTRO
-    meta = "".join(f"<span><b>{k}</b>{rich(v)}</span>" for k, v in d["meta"])
+    meta = "".join(f"<span>{k}: {rich(v)}</span>" for k, v in d["meta"])
     parts = [
         f'<div class="i-head"><div class="i-title">{d["title"]}</div>'
         f'<div class="i-meta">{meta}</div></div>',
-        f'<div class="headline"><div class="q">“{d["headline"]}”</div><p>{rich(d["lead"])}</p></div>',
+        f'<p class="body lead">{rich(d["lead"])}</p>',
     ]
     for sec in d["sections"]:
-        parts.append(f'<h2><span class="no">{sec["no"]}</span>{sec["title"]}</h2>')
-        parts.append(f'<div class="sub">{sec["subtitle"]}</div>')
+        parts.append(f'<h2>{sec["no"]}. {sec["title"]}</h2>')
         if "keywords" in sec:
-            boxes = "".join(
-                f'<div class="box"><div class="word">{k["word"]}</div>'
-                f'<div class="cap">{k["caption"]}</div><div class="txt">{k["text"]}</div></div>'
-                for k in sec["keywords"]
-            )
-            parts.append(f'<div class="kw">{boxes}</div>')
-            parts.append(f'<div class="closing">{sec["closing"]}</div>')
+            head = "".join(f'<th>{k["word"]}</th>' for k in sec["keywords"])
+            body = "".join(f'<td>{rich(k["text"])}</td>' for k in sec["keywords"])
+            parts.append(f'<table class="kw"><tr>{head}</tr><tr>{body}</tr></table>')
+            parts.append(f'<p class="body">{rich(sec["after"])}</p>')
         else:
-            parts.append('<div class="essay">' + "".join(f"<p>{rich(p)}</p>" for p in sec["paragraphs"])
-                         + "</div>")
-            if sec.get("closing"):
-                parts.append(f'<div class="closing boxed">{sec["closing"]}</div>')
+            parts += [f'<p class="body">{rich(p)}</p>' for p in sec["paragraphs"]]
     return page("나 소개서", INTRO_CSS, "".join(parts))
 
 
